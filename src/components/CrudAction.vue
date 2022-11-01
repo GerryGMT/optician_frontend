@@ -25,7 +25,7 @@
             New Patient
           </v-btn>
 
-          <!-- Dialog1 edit patient -->
+          <!-- Dialog1 EDIT patient -->
           <v-dialog v-model="dialog" max-width="500px">
             <v-card>
               <form v-on:submit.prevent="submitFormUpdate">
@@ -62,7 +62,7 @@
                     <v-col cols="12" sm="12" md="3" lg="6" class="pa-1">
                       <div>
                         <div class="mb-6">
-                          Active picker:
+                          Birthday Date:
                           <code>{{ activePickerEdit || "null" }}</code>
                         </div>
                         <v-menu
@@ -84,6 +84,7 @@
                               v-on="on"
                             ></v-text-field>
                           </template>
+                          <!-- Date picker -->
                           <v-date-picker
                             color="#04B18A"
                             v-model="editedItem.dob"
@@ -104,14 +105,16 @@
                     </v-col>
                     <!-- End of birthday -->
 
+                    <!-- County -->
                     <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
                       <v-text-field
                         outlined
                         v-model="editedItem.address"
-                        label="Address"
+                        label="County"
                         append-icon="mdi-map-marker"
                       ></v-text-field>
                     </v-col>
+                    <!-- Telephone -->
                     <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
                       <v-text-field
                         outlined
@@ -120,6 +123,7 @@
                         append-icon="mdi-phone"
                       ></v-text-field>
                     </v-col>
+                    <!-- Occupation -->
                     <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
                       <v-text-field
                         outlined
@@ -128,6 +132,7 @@
                         append-icon="mdi-briefcase"
                       ></v-text-field>
                     </v-col>
+                    <!-- Alert -->
                     <v-alert v-if="alertError1" type="error">
                       Error! Please try again later!
                     </v-alert>
@@ -199,17 +204,17 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <!-- view -->
+      <!-- view...for later-->
       <template v-slot:[`item.view`]="{ item }">
         <v-icon small class="mr-2" @click="viewItem(item)"> mdi-eye </v-icon>
       </template>
-      <!-- edit action -->
+      <!-- Edit Action -->
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
       </template>
     </v-data-table>
 
-    <!-- Add new patient -->
+    <!-- Add New Patient -->
     <v-dialog v-model="dialog1" max-width="500px">
       <v-card>
         <form v-on:submit.prevent="submitForm">
@@ -270,6 +275,7 @@
               </v-col>
               <!-- Date end -->
 
+              <!-- Full Name -->
               <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
                 <v-text-field
                   outlined
@@ -279,11 +285,21 @@
                 ></v-text-field>
               </v-col>
 
+              <!-- Email -->
+              <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
+                <v-text-field
+                  outlined
+                  v-model="email"
+                  label="Email"
+                  append-icon="mdi-email"
+                ></v-text-field>
+              </v-col>
+
               <!-- Birthday Date -->
               <v-col cols="12" sm="12" md="3" lg="6" class="pa-1">
                 <div>
                   <div class="mb-6">
-                    Active picker: <code>{{ activePicker || "null" }}</code>
+                    Birthday Date: <code>{{ activePicker || "null" }}</code>
                   </div>
                   <v-menu
                     ref="menu"
@@ -323,14 +339,16 @@
               </v-col>
               <!-- End of birth date -->
 
+              <!-- County -->
               <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
                 <v-text-field
                   outlined
                   v-model="newaddress"
-                  label="Address"
+                  label="County"
                   append-icon="mdi-map-marker"
                 ></v-text-field>
               </v-col>
+              <!-- Telephone -->
               <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
                 <v-text-field
                   outlined
@@ -339,6 +357,7 @@
                   append-icon="mdi-phone"
                 ></v-text-field>
               </v-col>
+              <!-- Occupation -->
               <v-col cols="12" sm="12" md="3" lg="12" class="pa-1">
                 <v-text-field
                   outlined
@@ -407,6 +426,7 @@ export default {
     view: false,
     isLoading: "Submit",
     fullname: "",
+    email: "",
     newdob: null,
     newaddress: "",
     newphone: "",
@@ -419,7 +439,12 @@ export default {
         sortable: false,
         value: "fullname",
       },
-      { text: "ADDRESS", value: "address" },
+      {
+        text: "EMAIL",
+        sortable: false,
+        value: "email",
+      },
+      { text: "COUNTY", value: "address" },
       { text: "OCCUPATION", value: "occupation" },
       { text: "DOB", value: "dob" },
       { text: "TELEPHONE", value: "phone" },
@@ -430,6 +455,7 @@ export default {
     editedIndex: -1,
     editedItem: {
       fullname: " ",
+      email: " ",
       address: " ",
       occupation: " ",
       dob: " ",
@@ -437,6 +463,7 @@ export default {
     },
     defaultItem: {
       fullname: " ",
+      email: " ",
       address: " ",
       occupation: " ",
       dob: " ",
@@ -446,6 +473,7 @@ export default {
     viewedIndex: -1,
     viewedItem: {
       fullname: " ",
+      email: " ",
       address: 0,
       occupation: 0,
       dob: 0,
@@ -511,6 +539,7 @@ export default {
         const response = await axios.post("patient", {
           date: this.date,
           fullname: this.fullname,
+          email: this.email,
           dob: this.newdob,
           address: this.newaddress,
           phone: this.newphone,
@@ -530,6 +559,7 @@ export default {
       try {
         const response = await axios.put(`patient/${this.userID}`, {
           fullname: this.editedItem.fullname,
+          email: this.editedItem.email,
           dob: this.editedItem.dob,
           address: this.editedItem.address,
           phone: this.editedItem.phone,
